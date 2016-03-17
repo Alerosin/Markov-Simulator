@@ -77,6 +77,9 @@ public class RasterReader
 					System.out.println( "Unknown line: " + line);
 			}
 		}
+		
+		input.close();
+
 		return raster;
 	}
 }
