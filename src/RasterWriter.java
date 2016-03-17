@@ -9,11 +9,6 @@ public class RasterWriter
 	String nodataString = Raster.DEFAULT_NODATA;
 	public static final DecimalFormat INT_FORMAT = new DecimalFormat("0");
 
-	public static void main( String[] args ) throws IOException
-	{
-		//RasterWriter rt = new RasterWriter();
-	}
-
 	public void writeRaster( String filename, Raster r ) throws IOException
 	{
 		File f = new File( filename );

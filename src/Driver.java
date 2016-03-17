@@ -2,14 +2,25 @@ import java.io.IOException;
 
 public class Driver {
 	
-	private static final double[][] functionMatrix = {{1.04, -0.9, 0,0,0,0}, {0.1, 1, 0, 0, 0, 0}, {0, 0, 1, 0, 0, 0}, {0, 0, 0, 1, 0, 0}, {0, 0, 0, 0, 1, 0}, {0, 0, 0, 0, 0, 1}};
 
 	public static void main(String[] args) throws IOException {
-		Grid world = new Grid("testPopulation.asc", "testFood.asc", "testTerrain.asc", functionMatrix);
-		world.printGrid();
+		matrixReader mr = new matrixReader();
+		final double[][] functionMatrix = mr.readFromFile("functionMatrix.txt");
+		final double[][] logFunctionMatrix = mr.readFromFile("logFunctionMatrix.txt");
+		
+		String filePath = "TestInputs\\" + args[0] + "\\";
+		
+		Grid world = new Grid(filePath + "testPopulation.asc", filePath + "testTerrain.asc", filePath + "testCropland.asc", functionMatrix, logFunctionMatrix);
+		
+		
+		
+		RasterWriter rw = new RasterWriter();
+		
 		for (int i = 0; i < 5; i++) {
 			world.step();
-			world.printGrid();
+			rw.writeRaster("output" + i + ".asc", world.makePopRaster());
 		}
+		
+		
 	}
 }
