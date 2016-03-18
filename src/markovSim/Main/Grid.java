@@ -1,3 +1,4 @@
+package markovSim.Main;
 import java.io.IOException;
 
 public class Grid {

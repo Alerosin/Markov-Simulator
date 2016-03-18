@@ -1,9 +1,10 @@
+package markovSim.Main;
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 
-public class matrixReader {
+public class DataMatrixReader {
 
 	public double[][] readFromFile(String file) {
 		double[][] matrix = new double[110][110];

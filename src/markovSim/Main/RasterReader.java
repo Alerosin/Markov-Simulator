@@ -1,3 +1,4 @@
+package markovSim.Main;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
@@ -17,6 +18,7 @@ public class RasterReader
 	public Raster readRaster( String filename ) throws IOException
 	{
 		Raster raster = new Raster();
+		@SuppressWarnings("resource")
 		BufferedReader input = new BufferedReader( new FileReader( filename ) );
 		while( input.ready() )
 		{
