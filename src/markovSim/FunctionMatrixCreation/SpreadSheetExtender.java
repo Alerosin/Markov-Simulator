@@ -25,7 +25,6 @@ public class SpreadSheetExtender {
 	private void extendSheet() {
 		try
 		{
-
 			FileInputStream file = new FileInputStream(new File(sheetPath + ".xlsx"));
 			XSSFWorkbook workbook = new XSSFWorkbook(file);
 			XSSFSheet sheet = workbook.getSheetAt(0);
@@ -46,7 +45,6 @@ public class SpreadSheetExtender {
 			String[] nsew = {"n", "s", "e", "w"};
 
 			for (int i = 1; i < numberOfRows+1; i++) {
-
 				// Copy values from columns 0, 2, 3 & 4 into the new spreadsheet
 				Cell c = exSheet.getRow(i).createCell(2);
 				c.setCellValue(sheet.getRow(i).getCell(2).getStringCellValue());
@@ -65,8 +63,7 @@ public class SpreadSheetExtender {
 					c.setCellValue(sheet.getRow(i).getCell(4).getStringCellValue());
 				}
 				
-				
-				// Loop extends columns 0, 2, 3 & 4
+				// Extend columns 0, 2, 3 & 4
 				int mult = 1;
 				for (String s : nsew) {
 					c = exSheet.getRow(mult*numberOfRows + i).createCell(2);
@@ -79,8 +76,6 @@ public class SpreadSheetExtender {
 					c.setCellValue(exSheet.getRow(mult*numberOfRows + i).getCell(2).getStringCellValue());
 					mult++;
 				}
-
-
 			}
 
 			file.close();
@@ -90,7 +85,6 @@ public class SpreadSheetExtender {
 			FileOutputStream fileOut = new FileOutputStream(sheetPath + "_EXTENDED.xlsx");
 			exBook.write(fileOut);
 			fileOut.close();
-			
 		} 
 		catch (Exception e) 
 		{

@@ -160,7 +160,6 @@ public class FunctionMatrixCreator {
 			for (int i = 0; i < funcMatrix.length; i++) {
 				for (int j = 0; j < funcMatrix.length; j++) {
 					writer.print(funcMatrix[i][j]);
-					System.out.println(j);
 					if (j == funcMatrix.length-1) {
 						writer.print("\n");
 					} else {

@@ -7,6 +7,7 @@ public class Grid {
 	private Cell[][] cells;
 	private double[][] popGrid, terrGrid, cropGrid;
 	public double[][] functionMatrix, logFunctionMatrix;
+	
 
 	public Grid(String popGridS, String tGridS, String cGridS, double[][] functionMatrix, double[][] logMatrix) throws IOException {
 		RasterReader rt = new RasterReader();
@@ -31,18 +32,18 @@ public class Grid {
 	private void initCells() {
 		this.cells = new Cell[height][width];
 		double[] stateVector = new double[functionMatrix.length/5];
-		
+
 		// Initialise cells
 		for (int i = 0; i < height; i++) {
 			for (int j = 0; j < width; j++) {
 				stateVector[0] = popGrid[i][j];
-				stateVector[19] = terrGrid[i][j];
-				if (stateVector[19] == 0) {
-					stateVector[20] = 0;
+				stateVector[2] = terrGrid[i][j];
+				if (stateVector[2] == -1) {
+					stateVector[3] = 0;
 				} else {
-					stateVector[20] = 1;
+					stateVector[3] = 1;
 				}
-				stateVector[21] = cropGrid[i][j];
+				stateVector[11] = cropGrid[i][j];
 				cells[i][j] = new Cell(stateVector, functionMatrix, logFunctionMatrix);
 			}
 		}
@@ -92,17 +93,15 @@ public class Grid {
 	}
 
 	
+
+	public Cell getCell(int x, int y) {
+		return cells[x][y];
+	}
 	
-	
-	
-	
-	
-	
-	
-	public Raster makePopRaster() {
+	public Raster makeRaster(int x) {
 		for (int i = 0; i < height; i++) {
 			for (int j = 0; j < width; j++) {
-				popGrid[i][j] = Math.ceil(cells[i][j].getPop());
+				popGrid[i][j] = (int)(cells[i][j].getEntry(x));
 			}
 		}
 		return makeRaster(popGrid);
@@ -111,5 +110,15 @@ public class Grid {
 	public Raster makeRaster(double[][] data) {
 		Raster r = new Raster(data, 0.0833333, -180, -90);
 		return r;
+	}
+	
+	public int countPeople() {
+		int sum = 0;
+		for (Cell[] row : cells) {
+			for (Cell c : row) {
+				sum += c.getEntry(0);
+			}
+		}
+		return sum;
 	}
 }

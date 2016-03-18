@@ -1,8 +1,6 @@
 package markovSim.FunctionMatrixCreation;
 
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Set;
 import java.util.Stack;
 
 
@@ -55,7 +53,7 @@ public class EquationSolver {
 	private double evaluateEquation(int rowNum, String equation) {
 		String beingEvaluated = getSymbolFromIndex(rowNum);
 		Stack<Double> stack = new Stack<Double>();
-
+		
 		for (String token: equation.split("\\s")) {
 			Double tokenNum = null;
 			try {
@@ -86,7 +84,7 @@ public class EquationSolver {
 				double firstOperand = stack.pop();
 				stack.push(firstOperand + secondOperand);
 			} else{
-				System.out.println("\nerror: " + token);
+				System.out.println("error with token: " + token + "\tAt equation: " + equation);
 			}
 		}
 		return stack.pop();
