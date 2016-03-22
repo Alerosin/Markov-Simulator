@@ -8,6 +8,9 @@ public class Grid {
 	private double[][] popGrid, terrGrid, cropGrid;
 	public double[][] functionMatrix, logFunctionMatrix;
 	
+	private final double xll;
+	private final double yll;
+	
 
 	public Grid(String popGridS, String tGridS, String cGridS, double[][] functionMatrix, double[][] logMatrix) throws IOException {
 		RasterReader rt = new RasterReader();
@@ -15,6 +18,9 @@ public class Grid {
 		popGrid = rt.readRaster(popGridS).getData();
 		terrGrid = rt.readRaster(tGridS).getData();
 		cropGrid = rt.readRaster(cGridS).getData();
+		
+		xll = rt.readRaster(cGridS).getXll();
+		yll = rt.readRaster(cGridS).getYll();
 		
 		height = popGrid.length;
 		width = popGrid[0].length;
@@ -38,7 +44,7 @@ public class Grid {
 			for (int j = 0; j < width; j++) {
 				stateVector[0] = popGrid[i][j];
 				stateVector[2] = terrGrid[i][j];
-				if (stateVector[2] == -1) {
+				if (stateVector[2] == 0 || stateVector[2] == -9999) {
 					stateVector[3] = 0;
 				} else {
 					stateVector[3] = 1;
@@ -108,7 +114,7 @@ public class Grid {
 	}
 	
 	public Raster makeRaster(double[][] data) {
-		Raster r = new Raster(data, 0.0833333, -180, -90);
+		Raster r = new Raster(data, 0.0833333, xll, yll);
 		return r;
 	}
 	
