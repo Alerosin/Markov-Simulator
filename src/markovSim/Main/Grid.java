@@ -43,11 +43,11 @@ public class Grid {
 		for (int i = 0; i < height; i++) {
 			for (int j = 0; j < width; j++) {
 				stateVector[0] = popGrid[i][j];
-				stateVector[2] = terrGrid[i][j];
-				if (stateVector[2] == 0 || stateVector[2] == -9999) {
-					stateVector[3] = 0;
+				stateVector[1] = terrGrid[i][j];
+				if (stateVector[1] == 0 || stateVector[1] == -9999) {
+					stateVector[2] = 0; // Is water
 				} else {
-					stateVector[3] = 1;
+					stateVector[2] = 1;
 				}
 				stateVector[11] = cropGrid[i][j];
 				cells[i][j] = new Cell(stateVector, functionMatrix, logFunctionMatrix);
@@ -90,6 +90,7 @@ public class Grid {
 			for (Cell c: row) {
 				c.calcStep();
 			}
+			//System.exit(0);
 		}
 		for (Cell[] row : cells) {
 			for (Cell c: row) {
