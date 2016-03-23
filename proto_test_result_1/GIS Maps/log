@@ -1,0 +1,3 @@
+20160321   1   0     0     0Alex C:\Users\Alex\DOCUME~1\GISDAT~1\testCropland.TXT = GRIDASCII ( C:\Users\Alex\Documents\ArcGIS\Default.gdb\crop10000BC_Clip )
+20160321   1   0     1     0Alex C:\Users\Alex\DOCUME~1\GISDAT~1\testPopulation.TXT = GRIDASCII ( C:\Users\Alex\Documents\ArcGIS\Default.gdb\popc_10000BC_Clip )
+20160321   2   0     0     0Alex C:\Users\Alex\DOCUME~1\GISDAT~1\testTerrain.TXT = GRIDASCII ( C:\Users\Alex\Documents\ArcGIS\Default.gdb\landlake_Clip2 )
