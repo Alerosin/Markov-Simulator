@@ -1,14 +1,15 @@
 package markovSim.Main;
 
 import java.util.HashSet;
+import java.util.Hashtable;
 
 public class Cell {
 	private double[] state, nextState, nbhState; // This cell's state vector, next vector and the combined neighbourhood state. The latter is obtained by concatenating this cell's state with it's neighbour's 
 	private Cell[] nbh; // References to this cell's neighbourhood
 	private double [][] functionMatrix, logFunctionMatrix;
-	
-	private HashSet<Integer> noLogS;
-	private final int[] noLog = {2, 3};
+
+	private Hashtable<Integer, double[]> noLogT;  // Integer representing index in state vector, array representing it and it's neighbours values
+	private final int[] noLog = {2};
 
 
 	// Initialises the instance variables, and unless it is passed null copies the values in initState to state
@@ -25,16 +26,16 @@ public class Cell {
 				state[i] = initState[i];
 			}
 		}
-		
-		noLogS = new HashSet<Integer>(noLog.length);
+
+		noLogT = new Hashtable<Integer, double[]>(noLog.length);
 		for (int i = 0; i < noLog.length; i++) {
-			//for ( int j = 0; j < 5; j++) {
-				noLogS.add(noLog[i]);
-			//}
+			noLogT.put(noLog[i], new double[5]);
+			noLogT.get(noLog[i])[0] = state[noLog[i]];
 		}
-	
+
 	}
-	
+
+	// Constructor for empty cell, e.g outside the borders
 	public Cell(int length) {
 		state = new double[length];
 	}
@@ -57,8 +58,8 @@ public class Cell {
 		nbh[pos] = c;
 	}
 
-	
-	
+
+
 	/*
 	 *  SIMULATION RUNNING FUNCTIONS                                                                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	 */
@@ -75,43 +76,44 @@ public class Cell {
 	 */
 	public void calcStep() {
 		concatenate();
-		
+
+		//		for (int i : noLogT.keySet()) {
+		//			System.out.println(i);
+		//		}
+
 		// Log step
 		for (int i = 0; i < nbhState.length; i++) {
-			if (noLogS.contains(i)) {
+			if (noLogT.containsKey(i % state.length)) { 
 				if (nbhState[i] == 0) {
 					nbhState[i] -= Double.MAX_VALUE;
 				} else {
-					nbhState[i] = 0.000001;
+					nbhState[i] = 0;
 				}
-			} else if (nbhState[i] <= 0) {
+			} else if (nbhState[i] == 0) {
 				nbhState[i] = 0;
 			} else {
 				nbhState[i] = Math.log(nbhState[i]);
 			}
 		}
+
+		System.out.println(nbhState[2] + " " + nbhState[18] + " " + nbhState[34]);
 		
 		multMatrix(nbhState, logFunctionMatrix);
-		
+
 		// Antilog step
 		for (int i = 0; i < nbhState.length; i++) {
-			if (noLogS.contains(i)) {
-				if (nbhState[i] == 0.000001) {
-					nbhState[i] = 1;
-				} else {
-					continue;
-				}
-			} else if (nbhState[i] <= 0) {
+			if (noLogT.containsKey(i % state.length)) { 
+				nbhState[i] = noLogT.get(i % state.length)[i /state.length];
+			} else if (nbhState[i] == 0) {
 				nbhState[i] = 0;
 			} else {
 				nbhState[i] = Math.exp(nbhState[i]);
 			}
 		}
-		
+
 		multMatrix(nbhState, functionMatrix);
-		
+
 		extract();
-		
 	}
 
 	/**
@@ -122,16 +124,16 @@ public class Cell {
 		for (int i = 0; i < state.length; i++) {
 			state[i] = nextState[i];
 		}
-		
+
 		threshold();
 	}
-	
+
 	private void threshold() {
 		for (int i = 0; i < state.length; i++) {
 			if (state[i] < 0 || Double.isNaN(state[i])) state[i] = 0;
 		}
 	}
-	
+
 	/**
 	 * Creates the neighbourhoods state vector by writing the values of the cell's state vectors into a larger array. 
 	 * ie. [[vector1][vector2][vector3]...[vectorN]]
@@ -144,11 +146,8 @@ public class Cell {
 			nbhState[i + (state.length * 3)] = nbh[2].getStateV()[i];
 			nbhState[i + (state.length * 4)] = nbh[3].getStateV()[i];
 		}
-		//System.out.println(state.length);
-		
-		//System.out.println(nbhState[0] + "\t" + nbhState[state.length] + "\t" + nbhState[state.length*2] + "\t" + nbhState[state.length*3] + "\t" + nbhState[state.length*4]);
 	}
-	
+
 	/**
 	 * Extracts the first state vector from the nbhState, and puts it into nextState
 	 */
@@ -157,35 +156,35 @@ public class Cell {
 			nextState[i] = nbhState[i];
 		}
 	}
-	
+
 	private void multMatrix(double[] vector, double[][] matrix) {
 		int rows = matrix.length;
-	    int columns = matrix[0].length;
+		int columns = matrix[0].length;
 
-	    double[] result = new double[rows];
+		double[] result = new double[rows];
 
-	    for (int row = 0; row < rows; row++) {
-	        double sum = 0;
-	        for (int column = 0; column < columns; column++) {
-	            sum += matrix[row][column] * vector[column];
-	        }
-	        result[row] = sum;
-	    }
-	    
-	    for (int i = 0; i < result.length; i++) 
-	    	nbhState[i] = result[i];
+		for (int row = 0; row < rows; row++) {
+			double sum = 0;
+			for (int column = 0; column < columns; column++) {
+				sum += matrix[row][column] * vector[column];
+			}
+			result[row] = sum;
+		}
+
+		for (int i = 0; i < result.length; i++) 
+			nbhState[i] = result[i];
 	}
-	
-	
+
+
 	/*
 	 *  ERROR CHECKING/ OUTPUT FUNCTIONS                                                                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	 */
 
-		
+
 	public double getEntry(int i) {
 		return Math.round(state[i]);
 	}
-	
+
 	public void printNBH() {
 		System.out.println(nbhState[0] + "\t" + nbhState[state.length] + "\t" + nbhState[state.length*2] + "\t" + nbhState[state.length*3] + "\t" + nbhState[state.length*4]);
 	}
