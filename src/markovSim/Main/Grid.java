@@ -119,13 +119,13 @@ public class Grid {
 		return r;
 	}
 	
-	public int countPeople() {
-		int sum = 0;
+	public double countPeople() {
+		double sum = 0;
 		for (Cell[] row : cells) {
 			for (Cell c : row) {
 				sum += c.getEntry(0);
 			}
 		}
-		return sum;
+		return Math.round(sum);
 	}
 }

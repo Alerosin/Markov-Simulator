@@ -8,9 +8,9 @@ public class Driver {
 	private static final String funcSpreadsheet = "Project-Functions";
 	private static final String funcMatrix = "functionMatrix.txt";
 	private static final String logMatrix = "logFunctionMatrix.txt";
-	private static final String outputPath = "proto_test_result_1/";
+	private static final String outputPath = "C:\\Users\\Alex\\git\\Markov-Simulator\\newResults\\";
 
-	private static final int runningTime = 5;
+	private static final int runningTime = 100;
 
 	public static void main(String[] args) throws IOException {
 		new SpreadSheetExtender(funcSpreadsheet);
@@ -20,7 +20,7 @@ public class Driver {
 		final double[][] functionMatrix = mr.readFromFile(funcMatrix);
 		final double[][] logFunctionMatrix = mr.readFromFile(logMatrix);
 
-		String filePath = "TestInputs/" + args[0] + "/";
+		String filePath = args[0] + "\\";
 
 		long startTime = System.currentTimeMillis();
 
@@ -39,7 +39,7 @@ public class Driver {
 
 		startTime = System.currentTimeMillis();
 		
-		int outputRes = 1;
+		int outputRes = 10;
 		for (int i = 0; i < runningTime; i++) {
 			//			System.out.println(world.getCell(2, 6).getEntry(3));
 			//			for ( int j = 0; j < world.functionMatrix.length/5; j++) {
@@ -57,10 +57,11 @@ public class Driver {
 
 			world.step();
 			System.out.println("Step " + i + " complete");
+			System.out.println("People:\t" + world.countPeople() + "\n");
 			
 			if (i%outputRes == 0 && i != 0) {
-				rw.writeRaster(outputPath + "POOPoutput" + i + ".asc", world.makeRaster(0));
-				System.out.println("Percent Completed: " + (i * 100 / runningTime) + "%");
+				rw.writeRaster(outputPath + "output" + i + ".asc", world.makeRaster(0));
+				System.out.println("Percent Completed: " + ((i+1) * 100 / runningTime) + "%");
 			}
 		}
 

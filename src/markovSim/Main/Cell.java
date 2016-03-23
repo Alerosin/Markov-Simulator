@@ -85,7 +85,7 @@ public class Cell {
 		for (int i = 0; i < nbhState.length; i++) {
 			if (noLogT.containsKey(i % state.length)) { 
 				if (nbhState[i] == 0) {
-					nbhState[i] -= Double.MAX_VALUE;
+					nbhState[i] = -999999999999999.0;
 				} else {
 					nbhState[i] = 0;
 				}
@@ -95,10 +95,10 @@ public class Cell {
 				nbhState[i] = Math.log(nbhState[i]);
 			}
 		}
+		System.out.println("Dam: " + nbhState[3]);
 
-		System.out.println(nbhState[2] + " " + nbhState[18] + " " + nbhState[34]);
-		
 		multMatrix(nbhState, logFunctionMatrix);
+		System.out.println("Dam: " + nbhState[3]);
 
 		// Antilog step
 		for (int i = 0; i < nbhState.length; i++) {
@@ -110,10 +110,14 @@ public class Cell {
 				nbhState[i] = Math.exp(nbhState[i]);
 			}
 		}
+		System.out.println("Dam: " + nbhState[3]);
 
 		multMatrix(nbhState, functionMatrix);
-
+		System.out.println("Dam: " + nbhState[3]);
+		System.out.println("Dam: " + state[3]);
 		extract();
+		System.out.println("Dam: " + state[3]);
+		System.exit(0);
 	}
 
 	/**
@@ -122,7 +126,11 @@ public class Cell {
 	 */
 	public void thresholdStep() {
 		for (int i = 0; i < state.length; i++) {
-			state[i] = nextState[i];
+			if (nextState[i] <= 0) {
+				state[i] = 0;
+			} else {
+				state[i] = nextState[i];
+			}
 		}
 
 		threshold();
