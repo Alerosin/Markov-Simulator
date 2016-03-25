@@ -34,7 +34,7 @@ public class RasterWriter
 				if( Double.isNaN( row[i] )  ) b.append( r.getNDATA() );
 				else if( cellFormat != null ) b.append( cellFormat.format( row[i] ));
 				else b.append( row[i] );
-				if( i < row.length-1 ) b.append(  " "  );
+				if( i < row.length-1 ) b.append(  "\t"  );
 			}
 			o.println( b );
 		}

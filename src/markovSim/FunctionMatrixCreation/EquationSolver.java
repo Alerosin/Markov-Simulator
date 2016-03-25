@@ -85,6 +85,7 @@ public class EquationSolver {
 				stack.push(firstOperand + secondOperand);
 			} else{
 				System.out.println("error with token: " + token + "\tAt equation: " + equation);
+				System.exit(-1);
 			}
 		}
 		return stack.pop();

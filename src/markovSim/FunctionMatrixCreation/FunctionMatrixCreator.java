@@ -33,7 +33,12 @@ public class FunctionMatrixCreator {
 	
 	protected HashMap<String, Integer> symbols; // Initialised in readSheet()
 	protected String[] funcEqs, logEqs; // Initialised in readSheet()
-
+	
+	private boolean[] isRandomLONG;
+	private boolean[] isThresholdedLONG;
+	
+	public boolean[] isRandom;
+	public boolean[] threshold;
 
 
 	public FunctionMatrixCreator(String sheet) {
@@ -46,6 +51,14 @@ public class FunctionMatrixCreator {
 		createMatrices();
 		
 		writeMatricesToFile();
+		
+		isRandom = new boolean[isRandomLONG.length/5];
+		threshold = new boolean[isRandomLONG.length/5];
+		
+		for (int i = 0; i < isRandom.length; i++) {
+			isRandom[i] = isRandomLONG[i];
+			threshold[i] = isThresholdedLONG[i];
+		}
 	}
 
 	private void createMatrices() {
@@ -79,6 +92,8 @@ public class FunctionMatrixCreator {
 			symbols = new HashMap<String, Integer>(numberOfRows);
 			funcMatrix = new double[numberOfRows][numberOfRows];
 			logMatrix = new double[numberOfRows][numberOfRows];
+			isRandomLONG = new boolean[numberOfRows];
+			isThresholdedLONG = new boolean[numberOfRows];
 
 			Iterator<Row> rowIterator = sheet.iterator();
 			Row row = rowIterator.next();
@@ -86,21 +101,45 @@ public class FunctionMatrixCreator {
 			for (int i = 0; i < numberOfRows; i++) {
 				row = rowIterator.next();
 				
-				Cell symbol = row.getCell(2);
+				Cell symbol = row.getCell(2); // Get symbol
 				symbols.put(symbol.getStringCellValue(), i);
 				
-				Cell c = row.getCell(3);
+				Cell c = row.getCell(3); // Get normal space equation
 				if (c == null || c.getCellType() == Cell.CELL_TYPE_BLANK) {
 					funcEqs[i] = symbol.getStringCellValue();
 				} else {
 					funcEqs[i] = c.getStringCellValue();
 				}
 				
-				c = row.getCell(4);
+				c = row.getCell(4); // Get log space equation
 				if (c == null || c.getCellType() == Cell.CELL_TYPE_BLANK) {
 					logEqs[i] = symbol.getStringCellValue();
 				} else {
 					logEqs[i] = c.getStringCellValue();
+				}
+				
+				c = row.getCell(5); // Get threshold flag
+				if (c == null || c.getCellType() == Cell.CELL_TYPE_BLANK) {
+					isThresholdedLONG[i] = false;
+				} else {
+					double x = c.getNumericCellValue();
+					if (x == 0) {
+						isThresholdedLONG[i] = false;
+					} else {
+						isThresholdedLONG[i] = true;
+					}
+				}
+				
+				c = row.getCell(6); // get isRandom flag
+				if (c == null || c.getCellType() == Cell.CELL_TYPE_BLANK) {
+					isRandomLONG[i] = false;
+				} else {
+					double x = c.getNumericCellValue();
+					if (x == 0) {
+						isRandomLONG[i] = false;
+					} else {
+						isRandomLONG[i] = true;
+					}
 				}
 			}
 			
@@ -110,6 +149,7 @@ public class FunctionMatrixCreator {
 		catch (Exception e) 
 		{
 			e.printStackTrace();
+			System.exit(-1);
 		}
 	}
 

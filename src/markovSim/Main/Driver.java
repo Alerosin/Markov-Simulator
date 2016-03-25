@@ -11,10 +11,12 @@ public class Driver {
 	private static final String outputPath = "proto_test_result_1/";
 
 	private static final int runningTime = 5;
+	private static final int outputRes = 1;
 
 	public static void main(String[] args) throws IOException {
 		new SpreadSheetExtender(funcSpreadsheet);
-		new FunctionMatrixCreator(funcSpreadsheet + "_EXTENDED.xlsx");
+		FunctionMatrixCreator fmc = new FunctionMatrixCreator(funcSpreadsheet + "_EXTENDED.xlsx");
+
 
 		DataMatrixReader mr = new DataMatrixReader();
 		final double[][] functionMatrix = mr.readFromFile(funcMatrix);
@@ -24,55 +26,45 @@ public class Driver {
 
 		long startTime = System.currentTimeMillis();
 
-		Grid world = new Grid(filePath + "testPopulation.asc", filePath + "testTerrain.asc", filePath + "testCropland.asc", functionMatrix, logFunctionMatrix);
+
+		Grid world = new Grid(filePath + "testPopulation.asc", filePath + "testTerrain.asc", filePath + "testCropland.asc", functionMatrix, logFunctionMatrix, fmc.threshold, fmc.isRandom, false);
 
 
 		RasterWriter rw = new RasterWriter();
-
 		rw.writeRaster(outputPath + "output_start.asc", world.makeRaster(0));
 
 		System.out.println("People at start:\t" + world.countPeople() );
 
 		long endTime = System.currentTimeMillis();
 		long setUpTime = endTime - startTime;
-		System.out.println("Setup time: " + setUpTime/1000.0);
+		System.out.printf("Set up time in seconds: %.2fs\n", setUpTime/1000.0);
 
 		startTime = System.currentTimeMillis();
-		
-		int outputRes = 1;
+
 		for (int i = 0; i < runningTime; i++) {
-			//			System.out.println(world.getCell(2, 6).getEntry(3));
-			//			for ( int j = 0; j < world.functionMatrix.length/5; j++) {
-			//				System.out.println(Math.ceil(world.getCell(2, 6).getEntry(j)) + "\t\t" + Math.ceil(world.getCell(2, 7).getEntry(j)));
-			//			}
-			//			
-			//			System.out.println("FIOHPISFA");
-
-			//world.getCell(2, 6).printNBH();
-			//System.out.println("People at step:\t" + world.countPeople() );
-
-			//			System.out.println(world.getCell(2, 6).getEntry(1));
-			//			System.out.println(world.getCell(2, 6).getEntry(6));
-			//System.out.println(world.getCell(2,  6).getEntry(0));
-
 			world.step();
-			System.out.println("Step " + i + " complete");
-			
+			//			System.out.println("Step " + i + " complete");
+
 			if (i%outputRes == 0 && i != 0) {
-				rw.writeRaster(outputPath + "POOPoutput" + i + ".asc", world.makeRaster(0));
-				System.out.println("Percent Completed: " + (i * 100 / runningTime) + "%");
+				rw.writeRaster(outputPath + "output" + i + ".asc", world.makeRaster(0));
+				rw.writeRaster(outputPath + "t1" + i + ".asc", world.makeRaster(14));
+				rw.writeRaster(outputPath + "t2" + i + ".asc", world.makeRaster(19));
+				rw.writeRaster(outputPath + "Y" + i  + ".asc", world.makeRaster(13));
+				System.out.println("Percent Completed:\t" + (i * 100.0 / runningTime) + "%");
 			}
 		}
+		System.out.println("Percent Completed:\t100%\n");
 
 		rw.writeRaster(outputPath + "outputEND.asc", world.makeRaster(0));
-		rw.writeRaster(outputPath + "water.asc", world.makeRaster(2));
+		rw.writeRaster(outputPath + "t1.asc", world.makeRaster(14));
+		rw.writeRaster(outputPath + "t2.asc", world.makeRaster(19));
+		rw.writeRaster(outputPath + "Y" + ".asc", world.makeRaster(13));
+		rw.writeRaster(outputPath + "rand.asc", world.makeRaster(24));
 
-		System.out.println("People at end:\t" + world.countPeople() );
+		System.out.printf("People at end:\t%.2f\n", world.countPeople() );
 
 		endTime = System.currentTimeMillis();
 		long runTime = endTime - startTime;
-
-		System.out.println("Runtime in seconds: " + endTime/1000.0);
-		
+		System.out.printf("Runtime in seconds: %.2fs", runTime/1000.0);
 	}
 }

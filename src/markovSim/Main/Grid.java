@@ -6,21 +6,26 @@ public class Grid {
 	private int width, height;
 	private Cell[][] cells;
 	private double[][] popGrid, terrGrid, cropGrid;
-	public double[][] functionMatrix, logFunctionMatrix;
-	
 	private final double xll;
 	private final double yll;
+	private boolean[] threshold;
+	private boolean[] isRandom;
+	private boolean haveBorders;
+	
+	public double[][] functionMatrix, logFunctionMatrix;
 	
 
-	public Grid(String popGridS, String tGridS, String cGridS, double[][] functionMatrix, double[][] logMatrix) throws IOException {
+	public Grid(String popGridS, String tGridS, String cGridS, double[][] functionMatrix, double[][] logMatrix, boolean[] threshold, boolean[] isRandom, boolean haveBorders) throws IOException {
 		RasterReader rt = new RasterReader();
-
 		popGrid = rt.readRaster(popGridS).getData();
 		terrGrid = rt.readRaster(tGridS).getData();
 		cropGrid = rt.readRaster(cGridS).getData();
-		
 		xll = rt.readRaster(cGridS).getXll();
 		yll = rt.readRaster(cGridS).getYll();
+		
+		this.haveBorders = haveBorders;
+		this.isRandom = isRandom;
+		this.threshold = threshold;
 		
 		height = popGrid.length;
 		width = popGrid[0].length;
@@ -49,8 +54,8 @@ public class Grid {
 				} else {
 					stateVector[2] = 1;
 				}
-				stateVector[11] = cropGrid[i][j];
-				cells[i][j] = new Cell(stateVector, functionMatrix, logFunctionMatrix);
+				stateVector[3] = cropGrid[i][j];
+				cells[i][j] = new Cell(stateVector, functionMatrix, logFunctionMatrix, threshold, isRandom);
 			}
 		}
 
@@ -59,25 +64,25 @@ public class Grid {
 			for (int j = 0; j < width; j++) {
 				// North neighbour
 				if (i == 0) {
-					cells[i][j].setNeigh(new Cell(stateVector.length), 0);
+					cells[i][j].setNeigh(new Cell(stateVector.length, haveBorders), 0);
 				} else {
 					cells[i][j].setNeigh(cells[i-1][j], 0);
 				}
 				// South Neighbour
 				if (i == (height-1)) {
-					cells[i][j].setNeigh(new Cell(stateVector.length), 1);
+					cells[i][j].setNeigh(new Cell(stateVector.length, haveBorders), 1);
 				} else {
 					cells[i][j].setNeigh(cells[i+1][j], 1);
 				}
 				// East Neighbour
 				if (j == (width -1)) {
-					cells[i][j].setNeigh(new Cell(stateVector.length), 2);
+					cells[i][j].setNeigh(new Cell(stateVector.length, haveBorders), 2);
 				} else {
 					cells[i][j].setNeigh(cells[i][j+1], 2);
 				}
 				// West Neighbour
 				if (j == 0) {
-					cells[i][j].setNeigh(new Cell(stateVector.length), 3);
+					cells[i][j].setNeigh(new Cell(stateVector.length, haveBorders), 3);
 				} else {
 					cells[i][j].setNeigh(cells[i][j-1], 3);
 				}
@@ -108,7 +113,7 @@ public class Grid {
 	public Raster makeRaster(int x) {
 		for (int i = 0; i < height; i++) {
 			for (int j = 0; j < width; j++) {
-				popGrid[i][j] = (int)(cells[i][j].getEntry(x));
+				popGrid[i][j] = (cells[i][j].getEntry(x));
 			}
 		}
 		return makeRaster(popGrid);
@@ -119,8 +124,8 @@ public class Grid {
 		return r;
 	}
 	
-	public int countPeople() {
-		int sum = 0;
+	public double countPeople() {
+		double sum = 0;
 		for (Cell[] row : cells) {
 			for (Cell c : row) {
 				sum += c.getEntry(0);
