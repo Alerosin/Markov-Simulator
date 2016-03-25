@@ -113,7 +113,7 @@ public class Grid {
 	public Raster makeRaster(int x) {
 		for (int i = 0; i < height; i++) {
 			for (int j = 0; j < width; j++) {
-				popGrid[i][j] = (cells[i][j].getEntry(x));
+				popGrid[i][j] = (int)(cells[i][j].getEntry(x));
 			}
 		}
 		return makeRaster(popGrid);

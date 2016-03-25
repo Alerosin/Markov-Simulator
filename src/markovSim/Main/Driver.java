@@ -49,7 +49,7 @@ public class Driver {
 				rw.writeRaster(outputPath + "output" + i + ".asc", world.makeRaster(0));
 				rw.writeRaster(outputPath + "t1" + i + ".asc", world.makeRaster(14));
 				rw.writeRaster(outputPath + "t2" + i + ".asc", world.makeRaster(19));
-				rw.writeRaster(outputPath + "Y" + i  + ".asc", world.makeRaster(13));
+				rw.writeRaster(outputPath + "Y" + ".asc", world.makeRaster(13));
 				System.out.println("Percent Completed:\t" + (i * 100.0 / runningTime) + "%");
 			}
 		}
