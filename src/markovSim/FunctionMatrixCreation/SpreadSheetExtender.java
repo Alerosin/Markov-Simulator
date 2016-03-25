@@ -45,7 +45,7 @@ public class SpreadSheetExtender {
 			String[] nsew = {"n", "s", "e", "w"};
 
 			for (int i = 1; i < numberOfRows+1; i++) {
-				// Copy values from columns 0, 2, 3 & 4 into the new spreadsheet
+				// Copy values from columns 0, 2, 3, 4, 5 & 6 into the new spreadsheet
 				Cell c = exSheet.getRow(i).createCell(2);
 				c.setCellValue(sheet.getRow(i).getCell(2).getStringCellValue());
 				
@@ -63,7 +63,21 @@ public class SpreadSheetExtender {
 					c.setCellValue(sheet.getRow(i).getCell(4).getStringCellValue());
 				}
 				
-				// Extend columns 0, 2, 3 & 4
+				c = exSheet.getRow(i).createCell(5);
+				if (sheet.getRow(i).getCell(5) == null || sheet.getRow(i).getCell(5).getCellType() == Cell.CELL_TYPE_BLANK) {
+					c.setCellValue(0);
+				} else {
+					c.setCellValue(sheet.getRow(i).getCell(5).getNumericCellValue());
+				}
+				
+				c = exSheet.getRow(i).createCell(6);
+				if (sheet.getRow(i).getCell(6) == null || sheet.getRow(i).getCell(6).getCellType() == Cell.CELL_TYPE_BLANK) {
+					c.setCellValue(0);
+				} else {
+					c.setCellValue(sheet.getRow(i).getCell(6).getNumericCellValue());
+				}
+				
+				// Extend columns 0, 2, 3, 4, 5 & 6
 				int mult = 1;
 				for (String s : nsew) {
 					c = exSheet.getRow(mult*numberOfRows + i).createCell(2);
@@ -74,6 +88,10 @@ public class SpreadSheetExtender {
 					c.setCellValue(exSheet.getRow(mult*numberOfRows + i).getCell(2).getStringCellValue());
 					c = exSheet.getRow(mult*numberOfRows + i).createCell(4);
 					c.setCellValue(exSheet.getRow(mult*numberOfRows + i).getCell(2).getStringCellValue());
+					c = exSheet.getRow(mult*numberOfRows + i).createCell(5);
+					c.setCellValue(0);
+					c = exSheet.getRow(mult*numberOfRows + i).createCell(6);
+					c.setCellValue(0);
 					mult++;
 				}
 			}
@@ -89,6 +107,7 @@ public class SpreadSheetExtender {
 		catch (Exception e) 
 		{
 			e.printStackTrace();
+			System.exit(-1);
 		}
 	}
 }
