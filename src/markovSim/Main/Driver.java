@@ -10,8 +10,8 @@ public class Driver {
 	private static final String logMatrix = "logFunctionMatrix.txt";
 	private static final String outputPath = "proto_test_result_1/";
 
-	private static final int runningTime = 5;
-	private static final int outputRes = 1;
+	private static final int runningTime = 500;
+	private static final int outputRes = 100;
 
 	public static void main(String[] args) throws IOException {
 		new SpreadSheetExtender(funcSpreadsheet);
