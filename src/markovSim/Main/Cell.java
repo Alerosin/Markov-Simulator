@@ -1,29 +1,40 @@
 package markovSim.Main;
 
-import java.util.HashSet;
 import java.util.Hashtable;
+import java.util.Random;
 
 public class Cell {
+	private static double randVariableThreshold = 0.5;
+
 	private double[] state, nextState, nbhState; // This cell's state vector, next vector and the combined neighbourhood state. The latter is obtained by concatenating this cell's state with it's neighbour's 
 	private Cell[] nbh; // References to this cell's neighbourhood
 	private double [][] functionMatrix, logFunctionMatrix;
+	private boolean isBorder;
+	private boolean[] isRandom;
+	private boolean[] threshold;
+	private Random rnd;
 
-	private Hashtable<Integer, double[]> noLogT;  // Integer representing index in state vector, array representing it and it's neighbours values
+	private Hashtable<Integer, double[]> noLogT;  // Stores indices of all stateVector indices that shouldn't be log(). E.g water
 	private final int[] noLog = {2};
 
 
 	// Initialises the instance variables, and unless it is passed null copies the values in initState to state
-	public Cell(double[] initState, double[][] fMatrix, double[][] lMatrix) {
+	public Cell(double[] initState, double[][] fMatrix, double[][] lMatrix, boolean[] threshold, boolean[] isRandom) {
 		state = new double[initState.length];
 		nextState = new double[initState.length];
 		nbhState = new double[initState.length * 5];
 		nbh = new Cell[4];
 		functionMatrix = fMatrix;
 		logFunctionMatrix = lMatrix;
+		isBorder = false;
+		this.threshold = threshold;
+		this.isRandom = isRandom;
+		rnd = new Random();
 
 		if (initState != null) {
 			for (int i = 0; i < initState.length; i ++) {
 				state[i] = initState[i];
+				if (isRandom[i]) state[i] = rnd.nextDouble(); 
 			}
 		}
 
@@ -32,12 +43,17 @@ public class Cell {
 			noLogT.put(noLog[i], new double[5]);
 			noLogT.get(noLog[i])[0] = state[noLog[i]];
 		}
-
 	}
 
 	// Constructor for empty cell, e.g outside the borders
-	public Cell(int length) {
+	public Cell(int length, boolean useBorders) {
 		state = new double[length];
+		isBorder = true;
+		if (useBorders) {
+			state[2] = 0;
+		} else {
+			state[2] = 1;
+		}
 	}
 
 
@@ -77,15 +93,11 @@ public class Cell {
 	public void calcStep() {
 		concatenate();
 
-		//		for (int i : noLogT.keySet()) {
-		//			System.out.println(i);
-		//		}
-
 		// Log step
 		for (int i = 0; i < nbhState.length; i++) {
 			if (noLogT.containsKey(i % state.length)) { 
 				if (nbhState[i] == 0) {
-					nbhState[i] = -999999999999999.0;
+					nbhState[i] -= Double.MAX_VALUE;
 				} else {
 					nbhState[i] = 0;
 				}
@@ -95,29 +107,27 @@ public class Cell {
 				nbhState[i] = Math.log(nbhState[i]);
 			}
 		}
-		System.out.println("Dam: " + nbhState[3]);
+		
 
+		System.out.println("Dam: " + nbhState[3]);
 		multMatrix(nbhState, logFunctionMatrix);
-		System.out.println("Dam: " + nbhState[3]);
-
+		
 		// Antilog step
 		for (int i = 0; i < nbhState.length; i++) {
 			if (noLogT.containsKey(i % state.length)) { 
 				nbhState[i] = noLogT.get(i % state.length)[i /state.length];
-			} else if (nbhState[i] == 0) {
+			} else if (i < state.length && threshold[i]) {
+				nbhState[i] = Math.exp(nbhState[i]);
+			} else if (nbhState[i] <= 0) {
 				nbhState[i] = 0;
 			} else {
 				nbhState[i] = Math.exp(nbhState[i]);
 			}
 		}
-		System.out.println("Dam: " + nbhState[3]);
-
+		
 		multMatrix(nbhState, functionMatrix);
-		System.out.println("Dam: " + nbhState[3]);
-		System.out.println("Dam: " + state[3]);
+
 		extract();
-		System.out.println("Dam: " + state[3]);
-		System.exit(0);
 	}
 
 	/**
@@ -125,25 +135,30 @@ public class Cell {
 	 * Iterates through state and at variables which are considered stochastic it checks if their value is above a threshold. If so, the outcome occurs (eg. a technology is discovered/spread to this tile)
 	 */
 	public void thresholdStep() {
+		// Updates the stateVector
 		for (int i = 0; i < state.length; i++) {
-			if (nextState[i] <= 0) {
-				state[i] = 0;
-			} else {
-				state[i] = nextState[i];
+			state[i] = nextState[i];
+
+			if (threshold[i]) {
+				state[i] = threshold(i);
+			} else if (isRandom[i]) {
+				state[i] = rnd.nextDouble();
+			} else if (state[i] < 0 || this.isBorder) {
+				state[i] = 0; // Removes population from border tiles
 			}
 		}
-
-		threshold();
 	}
 
-	private void threshold() {
-		for (int i = 0; i < state.length; i++) {
-			if (state[i] < 0 || Double.isNaN(state[i])) state[i] = 0;
+	private double threshold(int index) {
+		if (state[index] < randVariableThreshold) {
+			return 0;
+		} else {
+			return 1;
 		}
 	}
 
 	/**
-	 * Creates the neighbourhoods state vector by writing the values of the cell's state vectors into a larger array. 
+	 * Creates the neighbourhood state vector by writing the values of the cell's state vectors into a larger array. 
 	 * ie. [[vector1][vector2][vector3]...[vectorN]]
 	 */
 	private void concatenate() {
@@ -177,7 +192,7 @@ public class Cell {
 				sum += matrix[row][column] * vector[column];
 			}
 			result[row] = sum;
-		}
+		}     
 
 		for (int i = 0; i < result.length; i++) 
 			nbhState[i] = result[i];
@@ -190,10 +205,17 @@ public class Cell {
 
 
 	public double getEntry(int i) {
-		return Math.round(state[i]);
+		return (state[i]);
 	}
 
 	public void printNBH() {
 		System.out.println(nbhState[0] + "\t" + nbhState[state.length] + "\t" + nbhState[state.length*2] + "\t" + nbhState[state.length*3] + "\t" + nbhState[state.length*4]);
+	}
+
+	public void printNeighEntry(int i) {
+		System.out.print("\n" + state[i] + "   ");
+		for (Cell c : nbh) {
+			System.out.print(c.getEntry(i) + "   ");
+		}
 	}
 }
