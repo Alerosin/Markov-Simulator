@@ -108,6 +108,7 @@ public class Cell {
 			}
 		}
 		
+
 		multMatrix(nbhState, logFunctionMatrix);
 		
 		// Antilog step
