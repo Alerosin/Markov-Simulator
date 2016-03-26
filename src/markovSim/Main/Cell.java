@@ -15,7 +15,7 @@ public class Cell {
 	private Random rnd;
 
 	private Hashtable<Integer, double[]> noLogT;  // Stores indices of all stateVector indices that shouldn't be log(). E.g water
-	private final int[] noLog = {2};
+	private final int[] noLog = {1, 2};
 
 
 	// Initialises the instance variables, and unless it is passed null copies the values in initState to state
@@ -107,7 +107,7 @@ public class Cell {
 				nbhState[i] = Math.log(nbhState[i]);
 			}
 		}
-		
+
 		multMatrix(nbhState, logFunctionMatrix);
 	
 		// Antilog step
@@ -116,7 +116,7 @@ public class Cell {
 				nbhState[i] = noLogT.get(i % state.length)[i /state.length];
 			} else if (i < state.length && threshold[i]) {
 				nbhState[i] = Math.exp(nbhState[i]);
-			} else if (nbhState[i] <= 0) {
+			} else if (nbhState[i] < 0) {
 				nbhState[i] = 0;
 			} else {
 				nbhState[i] = Math.exp(nbhState[i]);

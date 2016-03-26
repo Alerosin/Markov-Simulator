@@ -45,7 +45,6 @@ public class Driver {
 			world.step();
 			//			System.out.println("Step " + i + " complete");
 
-			System.out.println(world.getCell(2, 6).getEntry(0));
 			if (i%outputRes == 0 && i != 0) {
 				rw.writeRaster(outputPath + "output" + i + ".asc", world.makeRaster(0));
 				rw.writeRaster(outputPath + "t1" + i + ".asc", world.makeRaster(14));
