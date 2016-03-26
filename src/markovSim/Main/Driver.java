@@ -10,14 +10,14 @@ public class Driver {
 	private static final String logMatrix = "logFunctionMatrix.txt";
 	private static final String outputPath = "proto_test_result_1/";
 
-	private static final int runningTime = 500;
-	private static final int outputRes = 100;
+	private static final int runningTime = 200;
+	private static final int outputRes = 10;
 
 	public static void main(String[] args) throws IOException {
 		new SpreadSheetExtender(funcSpreadsheet);
 		FunctionMatrixCreator fmc = new FunctionMatrixCreator(funcSpreadsheet + "_EXTENDED.xlsx");
 
-
+		
 		DataMatrixReader mr = new DataMatrixReader();
 		final double[][] functionMatrix = mr.readFromFile(funcMatrix);
 		final double[][] logFunctionMatrix = mr.readFromFile(logMatrix);
@@ -45,6 +45,7 @@ public class Driver {
 			world.step();
 			//			System.out.println("Step " + i + " complete");
 
+			System.out.println(world.getCell(2, 6).getEntry(0));
 			if (i%outputRes == 0 && i != 0) {
 				rw.writeRaster(outputPath + "output" + i + ".asc", world.makeRaster(0));
 				rw.writeRaster(outputPath + "t1" + i + ".asc", world.makeRaster(14));

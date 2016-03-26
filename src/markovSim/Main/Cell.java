@@ -4,7 +4,7 @@ import java.util.Hashtable;
 import java.util.Random;
 
 public class Cell {
-	private static double randVariableThreshold = 0.5;
+	private static double randVariableThreshold = 0.7;
 
 	private double[] state, nextState, nbhState; // This cell's state vector, next vector and the combined neighbourhood state. The latter is obtained by concatenating this cell's state with it's neighbour's 
 	private Cell[] nbh; // References to this cell's neighbourhood
@@ -97,7 +97,7 @@ public class Cell {
 		for (int i = 0; i < nbhState.length; i++) {
 			if (noLogT.containsKey(i % state.length)) { 
 				if (nbhState[i] == 0) {
-					nbhState[i] -= Double.MAX_VALUE;
+					nbhState[i] = -Double.MAX_VALUE;
 				} else {
 					nbhState[i] = 0;
 				}
@@ -108,9 +108,8 @@ public class Cell {
 			}
 		}
 		
-
 		multMatrix(nbhState, logFunctionMatrix);
-		
+	
 		// Antilog step
 		for (int i = 0; i < nbhState.length; i++) {
 			if (noLogT.containsKey(i % state.length)) { 
@@ -123,9 +122,9 @@ public class Cell {
 				nbhState[i] = Math.exp(nbhState[i]);
 			}
 		}
-		
-		multMatrix(nbhState, functionMatrix);
 
+		multMatrix(nbhState, functionMatrix);
+		
 		extract();
 	}
 
