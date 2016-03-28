@@ -2,6 +2,7 @@ package markovSim.Main;
 import java.io.IOException;
 
 public class Grid {
+	private static Grid singleton;
 
 	private int width, height;
 	private Cell[][] cells;
@@ -11,28 +12,34 @@ public class Grid {
 	private boolean[] threshold;
 	private boolean[] isRandom;
 	private boolean haveBorders;
-	
+
 	public double[][] functionMatrix, logFunctionMatrix;
-	
+
 
 	public Grid(String popGridS, String tGridS, String cGridS, double[][] functionMatrix, double[][] logMatrix, boolean[] threshold, boolean[] isRandom, boolean haveBorders) throws IOException {
+		if (singleton != null) {
+			System.err.println("Tried to create a second instance of Grid.java.");
+			System.exit(-1);
+		}
+		singleton = this;	
 		RasterReader rt = new RasterReader();
 		popGrid = rt.readRaster(popGridS).getData();
 		terrGrid = rt.readRaster(tGridS).getData();
 		cropGrid = rt.readRaster(cGridS).getData();
 		xll = rt.readRaster(cGridS).getXll();
 		yll = rt.readRaster(cGridS).getYll();
-		
+
 		this.haveBorders = haveBorders;
 		this.isRandom = isRandom;
 		this.threshold = threshold;
-		
+
 		height = popGrid.length;
 		width = popGrid[0].length;
 		this.functionMatrix = functionMatrix;
 		this.logFunctionMatrix = logMatrix;
 		this.initCells();
 	}
+
 
 
 	/**
@@ -104,12 +111,12 @@ public class Grid {
 		}
 	}
 
-	
+
 
 	public Cell getCell(int x, int y) {
 		return cells[x][y];
 	}
-	
+
 	public Raster makeRaster(int x) {
 		for (int i = 0; i < height; i++) {
 			for (int j = 0; j < width; j++) {
@@ -118,12 +125,12 @@ public class Grid {
 		}
 		return makeRaster(popGrid);
 	}
-	
+
 	public Raster makeRaster(double[][] data) {
 		Raster r = new Raster(data, 0.0833333, xll, yll);
 		return r;
 	}
-	
+
 	public double countPeople() {
 		double sum = 0;
 		for (Cell[] row : cells) {
