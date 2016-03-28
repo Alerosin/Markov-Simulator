@@ -18,7 +18,7 @@ public class Driver {
 		FunctionMatrixCreator fmc = new FunctionMatrixCreator(funcSpreadsheet + "_EXTENDED.xlsx");
 
 		
-		DataMatrixReader mr = new DataMatrixReader();
+		FunctionMatrixReader mr = new FunctionMatrixReader();
 		final double[][] functionMatrix = mr.readFromFile(funcMatrix);
 		final double[][] logFunctionMatrix = mr.readFromFile(logMatrix);
 

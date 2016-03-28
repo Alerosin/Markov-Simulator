@@ -4,7 +4,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 
-public class DataMatrixReader {
+public class FunctionMatrixReader {
 
 	public double[][] readFromFile(String file) {
 		double[][] matrix = new double[1][1]; // Properly initialised below
