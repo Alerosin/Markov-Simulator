@@ -11,7 +11,7 @@ import java.util.Arrays;
  * ascii string) and is internally represented as Double.NaN, as this is safer and
  * easier to deal with than the -9999 found in most rasters.
  * </ul>
- * @author dmrust
+ * @author Dave Murray-Rust (http://www.mo-seph.com/blog/1)
  *
  */
 public class Raster

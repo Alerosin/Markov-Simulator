@@ -4,6 +4,11 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.text.*;
 
+/**
+ * 
+ * @author Dave Murray-Rust (http://www.mo-seph.com/blog/1)
+ *
+ */
 public class RasterWriter
 {
 	NumberFormat cellFormat = null;

@@ -7,7 +7,7 @@ import java.util.regex.Pattern;
 
 /**
  * A class which reads an ESRI ASCII raster file into a Raster
- * @author dmrust
+ * @author Dave Murray-Rust (http://www.mo-seph.com/blog/1)
  *
  */
 public class RasterReader
